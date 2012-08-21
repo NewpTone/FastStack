@@ -151,4 +151,21 @@ losetup -f /opt/volume.img
 losetup -a 
 vgcreate nova-volumes /dev/loop0
 fi
+# Download a small image for test
+cd ~ && mkdir images
+cd images
+wget http://smoser.brickies.net/ubuntu/ttylinux-uec/ttylinux-uec-amd64-12.1_2.6.35-22_1.tar.gz
+tar zxvf ttylinux-uec-amd64-12.1_2.6.35-22_1.tar.gz
+source /root/openrc
+# Add images to glance
+glance add name="tty-kernel" disk_format=aki container_format=aki < ttylinux-uec-amd64-12.1_2.6.35-22_1-vmlinuz
+glance add name="tty-ramdisk" disk_format=ari container_format=ari < ttylinux-uec-amd64-12.1_2.6.35-22_1-loader
+
+kernel_id=`glance index | grep 'tty-kernel' | head -1 |  awk -F' ' '{print $1}'`
+ram_id=`glance index | grep 'tty-ramdisk' | head -1 |  awk -F' ' '{print $1}'`
+glance add name="tty-linux" kernel_id=${kernel_id} ramdisk_id=${ram_id} disk_format=ami container_format=ami < ttylinux-uec-amd64-12.1_2.6.35-22_1.img 
+
+#Add this,is just for good performance in vm 
+nova flavor-create m1.thin 6 64 0 1
+
 exit 0
