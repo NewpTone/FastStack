@@ -59,7 +59,7 @@ git clone git://github.com/puppetlabs/puppetlabs-openstack openstack
 cd openstack
 rake modules:clone
 
-
+touch /tmp/puppetlabs-openstack.patch
 cat > /tmp/puppetlabs-openstack.patch << EOF
 diff --git examples/site.pp examples/site.pp
 index 879d8fa..fd38d4e 100644
@@ -142,9 +142,9 @@ patch -p0 < /tmp/puppetlabs-openstack.patch
 ln -s /etc/puppet/modules/openstack/examples/site.pp /etc/puppet/manifests/init.pp
 
 #Use puppet to apply
-puppet apply -l /tmp/manifest.log /etc/puppet/manifest/init.pp
+puppet apply -l /tmp/manifest.log /etc/puppet/manifests/init.pp
 
-if echo $?=0;then
+if ! [ -e /dev/loop0 ];then
 #Add nova-volumes
 dd if=/dev/zero of=/opt/volume.img bs=8M seek=1000 count=0
 losetup -f /opt/volume.img
@@ -152,10 +152,12 @@ losetup -a
 vgcreate nova-volumes /dev/loop0
 fi
 # Download a small image for test
+if ! [ -e ~/images ];then
 cd ~ && mkdir images
 cd images
 wget http://smoser.brickies.net/ubuntu/ttylinux-uec/ttylinux-uec-amd64-12.1_2.6.35-22_1.tar.gz
 tar zxvf ttylinux-uec-amd64-12.1_2.6.35-22_1.tar.gz
+fi
 source /root/openrc
 # Add images to glance
 glance add name="tty-kernel" disk_format=aki container_format=aki < ttylinux-uec-amd64-12.1_2.6.35-22_1-vmlinuz
