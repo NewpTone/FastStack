@@ -1,11 +1,13 @@
 SAIO---QuickSetup-Script
 ========================
 
-It's used for setup and configure Swift All In One with shell script
+This project aims to deploy Openstack with Puppet.
 
 HOWTO
 =======================
 
-Just run start script:
-    1.sh script
-And have a coffee, LOL
+Just run FastStack.sh script.
+It can deploy Openstack All In One Env.
+In future, it will be overriden by Python and make more useful.
+
+						2012-8-22
